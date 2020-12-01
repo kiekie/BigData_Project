@@ -23,26 +23,26 @@ with open('G:/BDT5741/BDTproject/adtest.csv','r',encoding='utf-8') as csvfile:
             product_categroy[int(row['product_category'])].add(row['creative_id'])
 csvfile.close()  
 print(product_categroy)
-   
+
 user_click={}
 with open('G:/BDT5741/BDTproject/fretest.csv','r',encoding='utf-8') as csvfile:
-  reader = csv.DictReader(csvfile)
-  for row in reader:
-      if int(row['user_id']) not in user_click:
-          user_click[int(row['user_id'])]={}
-          for categroy in product_categroy.keys():
-              if row['creative_id'] in product_categroy[categroy]:
-                  if categroy not in user_click[int(row['user_id'])]:
-                      user_click[int(row['user_id'])][categroy]=1
-                  else:
-                      user_click[int(row['user_id'])][categroy]+=1
-      else:
-          for categroy in product_categroy.keys():
-              if row['creative_id'] in product_categroy[categroy]:
-                  if categroy not in user_click[int(row['user_id'])]:
-                      user_click[int(row['user_id'])][categroy]=1
-                  else:
-                      user_click[int(row['user_id'])][categroy]+=1
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        if int(row['user_id']) not in user_click:
+            user_click[int(row['user_id'])]={}
+            for categroy in product_categroy.keys():
+                if row['creative_id'] in product_categroy[categroy]:
+                    if categroy not in user_click[int(row['user_id'])]:
+                        user_click[int(row['user_id'])][categroy]=1
+                    else:
+                        user_click[int(row['user_id'])][categroy]+=1
+        else:
+            for categroy in product_categroy.keys():
+                if row['creative_id'] in product_categroy[categroy]:
+                    if categroy not in user_click[int(row['user_id'])]:
+                        user_click[int(row['user_id'])][categroy]=1
+                    else:
+                        user_click[int(row['user_id'])][categroy]+=1
 csvfile.close()
 
 #字典嵌入字典  key1为用户id，内层字典key为广告类目,value为观看次数
