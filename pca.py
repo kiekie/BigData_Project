@@ -10,6 +10,13 @@ import os
 from numpy import linalg as la
 import numpy as np
 
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score, adjusted_rand_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+
+
 #key为类目id，value为素材id
 product_categroy={}
 with open('G:/BDT5741/BDTproject/adtest.csv','r',encoding='utf-8') as csvfile:
@@ -48,7 +55,40 @@ csvfile.close()
 #字典嵌入字典  key1为用户id，内层字典key为广告类目,value为观看次数
 print(user_click)
 
+# reuse user_click and compute matrix
+####################### k_means begin ###########################################
+CATEGORY = 32
+N_CLUSTERS = 10
 
+matrix = [[0 for _ in range(CATEGORY)] for _ in range(len(user_click.keys()))]
+def user_category_matrix():
+    for user, categroies in user_click:
+        for categroy, click in categroies:
+            matrix[user][categroy] = click
+
+def k_means(data):
+    data = np.array(data)
+    clusterer = Pipeline(
+    [
+        ("scaler", MinMaxScaler()),
+        (
+            "kmeans",
+            KMeans(
+                n_clusters=N_CLUSTERS,
+                init="k-means++",
+                n_init=50,
+                max_iter=500,
+                random_state=42,
+            ),
+        ),
+    ]
+    clusterer.fit(data)
+)
+user_category_matrix(matrix)
+k_means(matrix)
+####################### k_means end ###########################################
+
+####################### pca begin #############################################
 tryd=[]
 testlist1=[0]*5
 testlist2=[0]*5
