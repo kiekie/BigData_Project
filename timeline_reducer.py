@@ -12,10 +12,10 @@ for line in sys.stdin:
     words = line.split(',')
     try:
         id = int(words[0])
+        time = int(words[1])
     except ValueError:
         continue
     if current_id == id:
-        time = int(words[1])
         if old_time == time:
             current_hot+=1
         else:
@@ -27,6 +27,8 @@ for line in sys.stdin:
     else:
         #output all the result
         if current_id != None:
+            linehot.append(current_hot)
+            timeline.append(old_time)
             print("-1,%d,"%current_id)
             for e in timeline:
                 print("%d"%e,end=',')
@@ -37,5 +39,5 @@ for line in sys.stdin:
             timeline = []
             linehot = []
         current_id = id
-        old_time = None
-        current_hot = 0
+        old_time = time
+        current_hot = 1
