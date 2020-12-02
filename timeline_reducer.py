@@ -9,7 +9,6 @@ current_hot = 0
 timeline = []
 linehot = []
 
-f = open("error.csv","w+")
 
 for line in sys.stdin:
     words = line.split(',')
@@ -34,15 +33,17 @@ for line in sys.stdin:
             timeline.append(old_time)
             #print("-1,%d,"%current_id)
             tmp = []
+            s = sum(linehot)
             for i in range(len(timeline)):
-                l = [timeline[i],linehot[i]]
+                j = 1.1
+                j = float(linehot[i] * 10000)/s
+                l = [timeline[i],j]
                 tmp.append(l)
             tmp.sort(key=lambda x:x[0])
             for e in tmp:
-                print("%d,%d"%((e[0]-tmp[0][0]),e[1]))
+                print("%d,%f"%((e[0]-tmp[0][0]),e[1]))
             timeline = []
             linehot = []
         current_id = id
         old_time = time
         current_hot = 1
-f.close()

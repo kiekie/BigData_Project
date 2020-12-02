@@ -2,15 +2,20 @@ from operator import itemgetter
 import linecache
 import sys
 import os
-old_line = None
+old_time = None
+old_per = 0.0
 count = 0
 
 for line in sys.stdin:
-    line = line[0:-1]
-    if line == old_line:
+    words = line.split(',')
+    time = int(words[0])
+    per = float(words[1])
+    if old_time == time:
+        old_per += per
         count+=1
     else:
-        if old_line != None:
-            print("%s,%d"%(old_line,count))
+        if old_time != None:
+            print("%d,%d"%(old_time,old_per/count))
         count = 1
-        old_line = line
+        old_per = per
+        old_time = time
