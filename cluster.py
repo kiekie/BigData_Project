@@ -8,11 +8,10 @@ Created on Tue Dec  1 11:26:10 2020
 #((ax+b)modc)modN
 #N=18
 #随意给一个数，来找哈希函数中的ac
-number=672
+number=19
 
 import random
 import os
-from numpy import linalg as la
 import numpy as np
 
 
@@ -59,37 +58,80 @@ def bulidhash(prime_pair):
     return prime_pair
 
 prime_pair=bulidhash(prime_pair)
-#print(bulidhash(prime_pair))
+print("hash 函数 abc",prime_pair)
     
-    
-    
-user_click=[0]*18
-user_click[0]=1
-user_click[3]=1
-user_click[7]=1
-user_click[8]=1
-user_click[12]=1
-user_click[17]=1 
 
 
 def hashf(a,b,c,x):
     return (a*x+b)%c
 
+    
+    
+#用户id对应其点击的广告类目id或者industry id 或者广告id
+#    这是优化的结构，可以不需要矩阵，这里为用户id为5，看过014，用户id为1，看过013
+users={5:{0,1,4},1:{0,1,3}}
+#users=[user_click]   
+sig_matrix=list()
+hashfunclist=[[2,2,5]]
 
-listd=[]    
-for i in range(len(prime_pair)):
-    tmp=[]
-    a=prime_pair[i][0]
-    b=prime_pair[i][1]
-    c=prime_pair[i][2]
-    for x in range(len(user_click)):
-        tmp.append(hashf(a,b,c,x))
-    listd.append(tmp)
+#在所有用户中遍历，第二层遍历为在所有哈希函数中遍历，并得到其对应的permutation，
+#然后寻找用户中最小signature（对应的第一个1）
+def minHash(users,hashfunclist,numElement=5):
+    similar_mat={}
+    unsimilar_count=0
+    for userkey in users.keys():
+        user=users[userkey]
+        tmpresult=[]
+        print("用户数据",user)
+        for hashfunc in hashfunclist:
+            tmppermutation=[]
+            a=hashfunc[0]
+            b=hashfunc[1]
+            c=hashfunc[2]
+            for x in range(numElement):
+                tmppermutation.append(hashf(a,b,c,x)) 
+#            每一次hash完的结果
+            print("tmppermutation",tmppermutation)
+            countflag=0
+            for sig in tmppermutation:
+                if tmppermutation.index(sig) in user:
+                    if countflag==0:
+                        tmpsig=sig
+                        countflag+=1
+                    elif sig<tmpsig:
+                        tmpsig=sig
+            tmpresult.append(tmpsig)
+            
+#        将初步相似的加入到同一key值下面，不相似的会新开一个key，放入新的signature列表
+        if len(similar_mat)==0:
+            similar_mat[unsimilar_count]=[tmpresult]
+        else:
+            similar_count=0
+            for key in similar_mat.keys():
+                for item in similar_mat[key][0]:
+#                    计算相似sig的数量，之和其中一个比就行，因为初步判断相似，不需要全部比较之后取均值
+                    if tmpresult[similar_mat[key][0].index(item)]==item:
+                        similar_count+=1
+#                0.5作为初步相似的阈值
+                if similar_count/len(similar_mat[key][0])>0.5:
+                    similar_mat[key].append(tmpresult)
+                    break
+                else:
+                    unsimilar_count+=1
+                    similar_mat[unsimilar_count]=[tmpresult]
+                    break
     
-print(listd)
-    
-    
-    
+                
+            
+    return similar_mat
+
+sig_matrix=(minHash(users,prime_pair))
+
+
+        
+#sig_matrix=(minHash(users,hashfunclist))
+            
+print(sig_matrix)
     
     
     
