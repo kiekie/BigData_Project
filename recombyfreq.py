@@ -31,7 +31,7 @@ if os.path.exists(txtpath):
 for keys,items in user_click.items():
     str1=''
     for item in items:
-        str1=str1+item+'\t'
+        str1=str1+item+' '
     with open(txtpath, 'a') as f:
         f.write(str1)
         f.write('\r')  
@@ -43,7 +43,7 @@ original_list=[]
    
 with open(txtpath, 'r') as file:
     for line in file:
-        s = line.strip().split('\t')
+        s = line.strip().split(' ')
         tarray=np.array(s)
         original_list.append(tarray.astype(np.int).tolist())
 print("original_list",original_list)
