@@ -7,11 +7,14 @@ Created on Sat Nov 21 15:42:40 2020
 
 import csv
 import os
+import sys
 import numpy as np
 
 user_click={}
+fre_test_path=sys.argv[1]
+txtpath=sys.argv[2]+'.txt'
 
-with open('G:/BDT5741/BDTproject/fretest.csv','r',encoding='utf-8') as csvfile:
+with open(fre_test_path,'r',encoding='utf-8') as csvfile:
   reader = csv.DictReader(csvfile)
   for row in reader:
       if int(row['user_id']) not in user_click:
@@ -23,13 +26,13 @@ with open('G:/BDT5741/BDTproject/fretest.csv','r',encoding='utf-8') as csvfile:
 csvfile.close()
 
 
-if os.path.exists('gtxt.txt'):
-    os.remove(r'gtxt.txt')
+if os.path.exists(txtpath):
+    os.remove(txtpath)
 for keys,items in user_click.items():
     str1=''
     for item in items:
         str1=str1+item+'\t'
-    with open(r'gtxt.txt', 'a') as f:
+    with open(txtpath, 'a') as f:
         f.write(str1)
         f.write('\r')  
 f.close()
@@ -38,7 +41,7 @@ f.close()
 #原用户点击数据
 original_list=[]    
    
-with open('G:/BDT5741/BDTproject/gtxt.txt', 'r') as file:
+with open(txtpath, 'r') as file:
     for line in file:
         s = line.strip().split('\t')
         tarray=np.array(s)
