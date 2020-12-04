@@ -9,7 +9,7 @@ import csv
 import os
 import sys
 import numpy as np
-
+#行为user 第一列为userid，列为所需数据
 user_click={}
 #ad.csv
 csv_path1=sys.argv[1]
