@@ -8,7 +8,7 @@ Created on Tue Dec  1 11:26:10 2020
 #((ax+b)modc)modN
 #N=18
 #随意给一个数，来找哈希函数中的ac
-number=77
+number=7
 
 import random
 import os
@@ -73,11 +73,11 @@ def hashf(a,b,c,x):
 users={5:{0,1,4},1:{0,1,3}}
 #users=[user_click]   
 sig_matrix=list()
-hashfunclist=[[4, 8, 15], [3, 9, 16], [2, 13, 17]]
+hashfunclist=[[2,2,5],[2,3,5],[2,1,5]]
 
 #在所有用户中遍历，第二层遍历为在所有哈希函数中遍历，并得到其对应的permutation，
 #然后寻找用户中最小signature（对应的第一个1）
-def minHash(users,hashfunclist,numElement=5):
+def minHash(users,hashfunclist,numElement=18):
     similar_mat={}
     unsimilar_count=0
     for userkey in users.keys():
@@ -89,18 +89,18 @@ def minHash(users,hashfunclist,numElement=5):
             a=hashfunc[0]
             b=hashfunc[1]
             c=hashfunc[2]
-            for x in range(numElement):
+            for x in user:
                 tmppermutation.append(hashf(a,b,c,x)) 
 #            每一次hash完的结果
             print("tmppermutation",tmppermutation)
             countflag=0
             for sig in tmppermutation:
-                if tmppermutation.index(sig) in user:
-                    if countflag==0:
-                        tmpsig=sig
-                        countflag+=1
-                    elif sig<tmpsig:
-                        tmpsig=sig
+#                if tmppermutation.index(sig) in user:
+                if countflag==0:
+                    tmpsig=sig
+                    countflag+=1
+                elif sig<tmpsig:
+                    tmpsig=sig
             tmpresult.append(tmpsig)
 
             
@@ -115,9 +115,9 @@ def minHash(users,hashfunclist,numElement=5):
 #                    计算相似sig的数量，之和其中一个比就行，因为初步判断相似，不需要全部比较之后取均值
                     if tmpresult[index]==similar_mat[key][0][index]:
                         similar_count+=1
-
 #                0.5作为初步相似的阈值
-                if (similar_count/(max(len(similar_mat[key][0]),len(tmpresult))-1))>0.5:
+#                if (similar_count/(max(len(similar_mat[key][0]),len(tmpresult))-1))>0.5:
+                if similar_count/(len(tmpresult)-1)>0.5:
                     print("similar====",(similar_count/(max(len(similar_mat[key][0]),len(tmpresult))-1)))           
                     similar_mat[key].append(tmpresult)
                     tmpflag=True
@@ -149,7 +149,7 @@ print("original_list",original_list)
 #sig_matrix=(minHash(users,hashfunclist))
             
 #print(sig_matrix)
-sig_matrix=(minHash(original_list,prime_pair))  
+sig_matrix=(minHash(original_list,hashfunclist))  
 print(sig_matrix)
     
     
