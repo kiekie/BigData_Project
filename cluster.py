@@ -8,12 +8,13 @@ Created on Tue Dec  1 11:26:10 2020
 #((ax+b)modc)modN
 #N=18
 #随意给一个数，来找哈希函数中的ac
-number=19
+number=77
 
 import random
 import os
 import numpy as np
-
+import sys
+#user_data_path=sys.argv[1]
 
 def isprime(num):
     for i in range(2, num):
@@ -72,7 +73,7 @@ def hashf(a,b,c,x):
 users={5:{0,1,4},1:{0,1,3}}
 #users=[user_click]   
 sig_matrix=list()
-hashfunclist=[[2,2,5]]
+hashfunclist=[[4, 8, 15], [3, 9, 16], [2, 13, 17]]
 
 #在所有用户中遍历，第二层遍历为在所有哈希函数中遍历，并得到其对应的permutation，
 #然后寻找用户中最小signature（对应的第一个1）
@@ -81,7 +82,7 @@ def minHash(users,hashfunclist,numElement=5):
     unsimilar_count=0
     for userkey in users.keys():
         user=users[userkey]
-        tmpresult=[]
+        tmpresult=[userkey]
         print("用户数据",user)
         for hashfunc in hashfunclist:
             tmppermutation=[]
@@ -101,38 +102,55 @@ def minHash(users,hashfunclist,numElement=5):
                     elif sig<tmpsig:
                         tmpsig=sig
             tmpresult.append(tmpsig)
+
             
 #        将初步相似的加入到同一key值下面，不相似的会新开一个key，放入新的signature列表
         if len(similar_mat)==0:
             similar_mat[unsimilar_count]=[tmpresult]
-        else:
-            similar_count=0
+        else:        
             for key in similar_mat.keys():
-                for item in similar_mat[key][0]:
+                tmpflag=False
+                similar_count=0
+                for index in range(1,len(similar_mat[key][0])):
 #                    计算相似sig的数量，之和其中一个比就行，因为初步判断相似，不需要全部比较之后取均值
-                    if tmpresult[similar_mat[key][0].index(item)]==item:
+                    if tmpresult[index]==similar_mat[key][0][index]:
                         similar_count+=1
+
 #                0.5作为初步相似的阈值
-                if similar_count/len(similar_mat[key][0])>0.5:
+                if (similar_count/(max(len(similar_mat[key][0]),len(tmpresult))-1))>0.5:
+                    print("similar====",(similar_count/(max(len(similar_mat[key][0]),len(tmpresult))-1)))           
                     similar_mat[key].append(tmpresult)
+                    tmpflag=True
                     break
-                else:
-                    unsimilar_count+=1
-                    similar_mat[unsimilar_count]=[tmpresult]
-                    break
+            if not tmpflag:
+                unsimilar_count+=1
+                similar_mat[unsimilar_count]=[tmpresult]         
+
     
                 
             
     return similar_mat
 
-sig_matrix=(minHash(users,prime_pair))
+#sig_matrix=(minHash(users,prime_pair))
 
 
+original_list={}    
+   
+with open('gtxt1.txt', 'r') as file:
+    for line in file:
+        s = line.strip().split(' ')
+        tarray=np.array(s).astype(np.int).tolist()
+        tmpset=set()
+        for data in tarray[1:]:
+            tmpset.add(data)
+        original_list[tarray[0]]=tmpset
+print("original_list",original_list)
         
 #sig_matrix=(minHash(users,hashfunclist))
             
+#print(sig_matrix)
+sig_matrix=(minHash(original_list,prime_pair))  
 print(sig_matrix)
-    
     
     
     
