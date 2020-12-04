@@ -50,7 +50,7 @@ def data_creative(csv_path,txtpath):
         for keys,items in user_click.items():
             str1=str(keys)+" "
             for item in items:
-                str1=str1+item+' '
+                str1=str1+str(item)+' '
             f.write(str1)
             f.write('\n')  
     f.close()
