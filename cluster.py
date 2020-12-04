@@ -64,7 +64,7 @@ prime_pair=bulidhash(prime_pair)
 
 
 def hashf_minhash(a,b,c,x):
-    return (a*x+b)%c
+    return (a*x+b**2)%c
 
 
     
@@ -119,7 +119,10 @@ def minHash(users,hashfunclist):
                 elif sig<tmpsig:
                     tmpsig=sig
             tmpresult.append(tmpsig)
-
+#        if userkey==8:
+#            print("caonima ::", tmpresult)
+#        if userkey==6:
+#            print("fuckdsdsadsada",tmpresult)
 
 #        将sig矩阵hash到不同的bucket中，只有完全一样的有很大几率hash到一个bucket中
 #        bucket=dictionary key为bucket id value为用户id
@@ -137,7 +140,7 @@ def minHash(users,hashfunclist):
 def LSH(user_sig,lshf):
     bucketid=0
     for i in range(0,len(lshf)-1):
-        bucketid+=((user_sig[lshf[i]])*((i+1))+i**5+i**4+i**3+i**2+i)%lshf[len(lshf)-1]
+        bucketid+=int(((user_sig[lshf[i]])*((i+1))+i**5+i**4+i**3+i**2+i)*0.5+13*i)%lshf[len(lshf)-1]
     return bucketid
 
 
