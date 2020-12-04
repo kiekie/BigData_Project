@@ -8,8 +8,7 @@ Created on Tue Dec  1 11:26:10 2020
 #((ax+b)modc)modN
 #N=18
 #随意给一个数，来找哈希函数中的ac
-number=69
-
+number=784
 import random
 import os
 import numpy as np
@@ -67,8 +66,6 @@ prime_pair=bulidhash(prime_pair)
 def hashf_minhash(a,b,c,x):
     return (a*x+b)%c
 
-def hashf_LSH(a,b,c,x,index):
-    return (a*x+b)%c
 
     
 #用户id对应其点击的广告类目id或者industry id 或者广告id
@@ -82,14 +79,18 @@ hashfunclist=[[2,2,5],[2,3,5],[2,1,5],[2,4,5]]
 #然后寻找用户中最小signature（对应的第一个1）
 def minHash(users,hashfunclist):
     lshf=[]
+#    chose_f=random.randint(1,len(hashfunclist))
+#    for i in range(5):
+#        lshf.append(chose_f+i)
+#    任选5个sig的位置，理论上只有完全一样的会hash到同一个bucket中
     for i in range(100):
-        if len(lshf)<5:
+        if len(lshf)<20:
             chose_f=random.randint(1,len(hashfunclist))
             if chose_f not in lshf:
                 lshf.append(chose_f)
             else:
                 chose_f=random.randint(0,len(hashfunclist))
-    for i in range(100000,1,-1):
+    for i in range(1000000,1,-1):
         if isprime(i):
             lshf.append(i)
             break
@@ -120,7 +121,6 @@ def minHash(users,hashfunclist):
             tmpresult.append(tmpsig)
 
 
-
 #        将sig矩阵hash到不同的bucket中，只有完全一样的有很大几率hash到一个bucket中
 #        bucket=dictionary key为bucket id value为用户id
         bucketid=LSH(tmpresult,lshf)
@@ -137,7 +137,7 @@ def minHash(users,hashfunclist):
 def LSH(user_sig,lshf):
     bucketid=0
     for i in range(0,len(lshf)-1):
-        bucketid+=(user_sig[lshf[i]]*((i+1)**2)+i**5+i**4+i**3+i**2+i)%lshf[len(lshf)-1]
+        bucketid+=((user_sig[lshf[i]])*((i+1))+i**5+i**4+i**3+i**2+i)%lshf[len(lshf)-1]
     return bucketid
 
 
