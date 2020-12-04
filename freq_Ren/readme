@@ -1,0 +1,6 @@
+更改 with open中的txt路径
+用 hadoop-streaming jar包，Under the hadoop-streaming jar directory, execute the following command:
+hadoop jar [hadoop-streaming ptah] -mapper "python [path of py project]\mapper.py" -reducer "python [path of py project]\reducer_a(b).py" -input [input file path]\data.dat -output [output directory]
+
+例子：
+hadoop jar hadoop-streaming-2.7.6.jar -mapper "python mapper.py" -reducer "python reducer_b.py" -input gtxt.txt -output /result-022
