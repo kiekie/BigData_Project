@@ -15,13 +15,13 @@ user_click={}
 csv_path1=sys.argv[1]
 #click_log.csv
 csv_path2=sys.argv[2]
-
+v
 #只输入txt文件名即可，不用增加后缀
 txtpath=sys.argv[3]
 
 #输入categroy，creative_id，industry其中之一，选择需要读取得到的数据。
 #针对kmeans 不要写入txt后再使用数据，会遗失点击次数的数据
-readtype=sys.arg[4]
+readtype=sys.argv[4]
 
 #csv_path1='adtest.csv'
 #csv_path2='click_log.csv'
