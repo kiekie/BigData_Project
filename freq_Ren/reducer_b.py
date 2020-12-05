@@ -59,14 +59,18 @@ def prune(item_list):
     result=OrderedDict()
     for freq_item in item_list:
         tmp_set=set()
+#      新加
+        result[freq_item]
+ 
         for index in range(len(original_list)):
             items=original_list[index]
             if freq_item in items:
-                if freq_item not in result:
-                    tmp_set.add(index)
-                    result[freq_item]=tmp_set
-                else:
-                    result[freq_item].add(index)
+                result[freq_item].add(index)
+#                 if freq_item not in result:
+#                     tmp_set.add(index)
+#                     result[freq_item]=tmp_set
+#                 else:
+#                     result[freq_item].add(index)
     return result
 #product frequent items set with k=2
 def product_two(dict):
