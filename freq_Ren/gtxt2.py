@@ -15,11 +15,11 @@ user_click={}
 csv_path1=sys.argv[1]
 #click_log.csv
 csv_path2=sys.argv[2]
-v
+
 #只输入txt文件名即可，不用增加后缀
 txtpath=sys.argv[3]
 
-#输入categroy，creative_id，industry其中之一，选择需要读取得到的数据。
+#输入category，creative_id，industry其中之一，选择需要读取得到的数据。
 #针对kmeans 不要写入txt后再使用数据，会遗失点击次数的数据
 readtype=sys.argv[4]
 
@@ -155,7 +155,7 @@ def data_industryid(csv_path1,csv_path2,txtpath):
         f.close()
         
         
-if readtype=="categroy":
+if readtype=="category":
     data_categroy(csv_path1,csv_path2,txtpath)
 elif readtype=="creative_id":
     data_creative(csv_path2,txtpath) 
