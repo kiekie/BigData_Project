@@ -17,6 +17,7 @@ tmp_dict=OrderedDict()
 item_list=[]
 original_list=[]
 path=sys.argv[1]
+support=sys.argv[2]
 
 print("load data 1")
 
@@ -47,7 +48,7 @@ for line in sys.stdin:
 print("load finish, sorting")
 
 for i in tmp_dict:
-    if tmp_dict[i]>20:
+    if tmp_dict[i]>support:
         item_list.append(int(i))
 item_list.sort()
 
@@ -81,7 +82,7 @@ def product_two(dict):
 #            Take the intersection of the location of the item
             val_set=items[key1][1]&items[key2][1]
             dkey=tuple(sorted(tuple(key_set)))
-            if len(val_set)<20:
+            if len(val_set)<support:
                 continue
             if dkey not in result:
                 result[dkey]=val_set
@@ -108,7 +109,7 @@ def product_kk(dictk,k):
                 keyset=keyset1|keyset2
 #            Take the intersection of the location of the item
                 valset=items1[key1][1]&items1[key2][1]
-                if len(valset)<20:
+                if len(valset)<support:
                     continue
                 dkey=tuple(sorted(tuple(keyset)))
                 if len(dkey)==k:
