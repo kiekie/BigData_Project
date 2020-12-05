@@ -104,7 +104,7 @@ def data_categroy(csv_path1,csv_path2,txtpath):
         f.close()
         
         
-def data_industryid(csv_path1,csv_path3,txtpath):
+def data_industryid(csv_path1,csv_path2,txtpath):
     #key为industry_id，value为素材id
     product_categroy={}
     with open(csv_path1,'r',encoding='utf-8') as csvfile:
