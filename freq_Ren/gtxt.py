@@ -104,8 +104,60 @@ def data_categroy(csv_path1,csv_path2,txtpath):
             f.write('\n')
         f.close()
         
-        
 def data_industryid(csv_path1,csv_path3,txtpath):
+    #key为industry_id，value为素材id
+    product_categroy={}
+    with open(csv_path1,'r',encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if int(row['industry']) not in product_categroy:
+                product_categroy[int(row['industry'])]=set()
+                if row['creative_id'] not in product_categroy[int(row['industry'])]:  
+                    product_categroy[int(row['industry'])].add(row['creative_id'])
+            else:
+                product_categroy[int(row['industry'])].add(row['creative_id'])
+    csvfile.close()  
+
+
+    user_click={}
+    #行user，列industry_id，交点为这个用户点击这个industry的次数
+    with open(csv_path2,'r',encoding='utf-8') as csvfile:
+      reader = csv.DictReader(csvfile)
+      for row in reader:
+          if int(row['user_id']) not in user_click:
+              user_click[int(row['user_id'])]={}
+              for categroy in product_categroy.keys():
+                  if row['creative_id'] in product_categroy[categroy]:
+                      if categroy not in user_click[int(row['user_id'])]:
+                          user_click[int(row['user_id'])][categroy]=int(row['click_times'])
+                      else:
+                          user_click[int(row['user_id'])][categroy]+=int(row['click_times'])
+          else:
+              for categroy in product_categroy.keys():
+                  if row['creative_id'] in product_categroy[categroy]:
+                      if categroy not in user_click[int(row['user_id'])]:
+                          user_click[int(row['user_id'])][categroy]=int(row['click_times'])
+                      else:
+                          user_click[int(row['user_id'])][categroy]+=int(row['click_times'])
+    csvfile.close()
+
+#    print(user_click)
+
+    if os.path.exists(txtpath+'_industry.txt'):
+        os.remove(txtpath+'_industry.txt')
+    with open(txtpath+'_industry.txt','a') as f:
+        for keys,items in user_click.items():
+            str1=str(keys)+" "
+            for item in items:
+                str1=str1+str(item)+" "
+            f.write(str1)
+            f.write('\n')
+        f.close()
+
+
+
+      
+def data_industryid_count(csv_path1,csv_path3,txtpath):
     #key为industry_id，value为素材id
     product_categroy={}
     with open(csv_path1,'r') as csvfile:
@@ -129,11 +181,11 @@ def data_industryid(csv_path1,csv_path3,txtpath):
     max_industry_id = max(product_categroy.keys())  #335
        
     user_click={}
+    #count = 0
     #行user，列industry_id，交点为这个用户点击这个industry的次数
     with open(csv_path2,'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            print("row", row)
             if int(row['user_id']) not in user_click:
                 user_click[int(row['user_id'])]={}
                 for categroy in product_categroy.keys():
@@ -149,6 +201,8 @@ def data_industryid(csv_path1,csv_path3,txtpath):
                             user_click[int(row['user_id'])][categroy]=int(row['click_times'])
                         else:
                             user_click[int(row['user_id'])][categroy]+=int(row['click_times'])
+            #count += 1
+            #if count > 10000: break
     csvfile.close()
     
 #    print(user_click)
@@ -195,6 +249,8 @@ elif readtype=="creative_id":
     data_creative(csv_path2,txtpath) 
 elif readtype=="industry":
     data_industryid(csv_path1,csv_path2,txtpath)
+elif readtype=="industry1":
+    data_industryid_count(csv_path1,csv_path2,txtpath)
 
 #原用户点击数据
 original_list=[]
