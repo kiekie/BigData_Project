@@ -5,21 +5,28 @@ Created on Tue Nov 24 16:24:22 2020
 @author: Bingo
 """
 
+import gtxt
 import csv
 import os
 from numpy import linalg as la
 import numpy as np
+import collections
 
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score, adjusted_rand_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.externals import joblib
 
+
+ADTEST_PATH = 'G:/BDT5741/BDTproject/adtest.csv'
+FRETEST_PATH = 'G:/BDT5741/BDTproject/fretest.csv'
+KMEANS_MODEL_PATH= './model/doc_cluster.pkl'
 
 #key为类目id，value为素材id
 product_categroy={}
-with open('G:/BDT5741/BDTproject/adtest.csv','r',encoding='utf-8') as csvfile:
+with open(ADTEST_PATH,'r',encoding='utf-8') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         if int(row['product_category']) not in product_categroy:
@@ -32,7 +39,7 @@ csvfile.close()
 print(product_categroy)
 
 user_click={}
-with open('G:/BDT5741/BDTproject/fretest.csv','r',encoding='utf-8') as csvfile:
+with open(FRETEST_PATH,'r',encoding='utf-8') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         if int(row['user_id']) not in user_click:
@@ -55,38 +62,97 @@ csvfile.close()
 #字典嵌入字典  key1为用户id，内层字典key为广告类目,value为观看次数
 print(user_click)
 
+
+def user_industry():
+    user_industry_click={}
+
+    with open(FRETEST_PATH,'r',encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if int(row['user_id']) not in user_industry_click:
+                user_industry_click[int(row['user_id'])]={}
+                for categroy in product_categroy.keys():
+                    if row['creative_id'] in product_categroy[categroy]:
+                        if categroy not in user_industry_click[int(row['user_id'])]:
+                            user_industry_click[int(row['user_id'])][categroy]=int(row['click_times'])
+                        else:
+                            user_industry_click[int(row['user_id'])][categroy]+=int(row['click_times'])
+            else:
+                for categroy in product_categroy.keys():
+                    if row['creative_id'] in product_categroy[categroy]:
+                        if categroy not in user_industry_click[int(row['user_id'])]:
+                            user_industry_click[int(row['user_id'])][categroy]=int(row['click_times'])
+                        else:
+                            user_industry_click[int(row['user_id'])][categroy]+=int(row['click_times'])
+    csvfile.close()
+
+    return user_industry_click
+
 # reuse user_click and compute matrix
 ####################### k_means begin ###########################################
 CATEGORY = 32
 N_CLUSTERS = 10
 
 matrix = [[0 for _ in range(CATEGORY)] for _ in range(len(user_click.keys()))]
+
 def user_category_matrix():
     for user, categroies in user_click:
         for categroy, click in categroies:
             matrix[user][categroy] = click
 
-def k_means(data):
-    data = np.array(data)
-    clusterer = Pipeline(
-    [
-        ("scaler", MinMaxScaler()),
-        (
-            "kmeans",
-            KMeans(
-                n_clusters=N_CLUSTERS,
-                init="k-means++",
-                n_init=50,
-                max_iter=500,
-                random_state=42,
+def k_means():
+    """
+    We only need to do k_means once and checkpoint lables
+    Do k_means occasionally in need.
+    TODO: replace Kmeans with minibatch-kmeans?
+    """
+    user_category_matrix(matrix)
+
+    clusterer = Pipeline (
+        [
+            ("scaler", MinMaxScaler()),
+            (
+                "kmeans",
+                KMeans(
+                    n_clusters=N_CLUSTERS,
+                    init="k-means++",
+                    n_init=50,
+                    max_iter=500,
+                    random_state=42,
+                ),
             ),
-        ),
-    ]
-    clusterer.fit(data)
-)
-user_category_matrix(matrix)
-k_means(matrix)
+        ]
+    )
+    clusterer.fit(matrix)
+
+    ## get users in the same cluster
+    clf = clusterer[1]
+    print(clf.labels_)
+    clusters = clf.labels_.tolist()
+    print(clusters)
+
+    ## store our cluster model
+    joblib.dump(clf,  KMEANS_MODEL_PATH)
+
+def find_neighbors(user_id):
+    """
+    First we load model we trained before in K-means
+    Get the neighbors in the same cluster.
+    And do cluster again
+    """
+    km = joblib.load(KMEANS_MODEL_PATH)
+    clusters = km.labels_.tolist()
+    label = clusters[user_id]
+    neighbors = [i for i, l in enumerate(clusters) if l == label]
+    return neighbors
+
+def recommend(user_id):
+    pass
+    
+## Then we do cluster on those neighbors based on industry id
+
 ####################### k_means end ###########################################
+
 
 ####################### pca begin #############################################
 tryd=[]
