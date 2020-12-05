@@ -1,6 +1,6 @@
 import os
 
-support = 20
+support = 200
 fdir = "./mid/"
 
 # try:
@@ -12,7 +12,7 @@ fdir = "./mid/"
 
 First_cmd = "cat mid.txt | python3 mapper_first.py | sort | python3 reducer_first.py "+ str(support) + " > mid1.txt"
 print("Stage 0:"+First_cmd)
-os.system(First_cmd)
+#os.system(First_cmd)
 run_cmd = ""
 i = 1
 cmd = "cat "
