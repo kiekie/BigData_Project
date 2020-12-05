@@ -16,16 +16,17 @@ from collections import OrderedDict
 tmp_dict=OrderedDict()
 item_list=[]
 original_list=[]
+path=sys.argv[1]
 
+print("load data 1")
 
-
-
-with open('G:/BDT5741/asgn-1/assignment-02/gtxt1.txt','r',encoding='utf-8') as file:
+with open(path,'r',encoding='utf-8') as file:
     for line in file:
         s = line.strip().split('\t')
         tarray=np.array(s[0].split(" "))
         original_list.append(tarray.astype(np.int).tolist())
 
+print("load data 2")
 
 for line in sys.stdin:
     line = line.strip()
@@ -43,10 +44,14 @@ for line in sys.stdin:
         count=tmp_dict[item]+1
         tmp_dict[item]=count
 #Select items that appear more than the threshold 20    
+print("load finish, sorting")
+
 for i in tmp_dict:
     if tmp_dict[i]>20:
         item_list.append(int(i))
 item_list.sort()
+
+print("sort finish")
 
 #make the original data into {key:set(the index that an item exist)}
 def prune(item_list):
