@@ -60,7 +60,7 @@ def prune(item_list):
     for freq_item in item_list:
         tmp_set=set()
 #      新加
-        result[freq_item]
+        result[freq_item]=set()
  
         for index in range(len(original_list)):
             items=original_list[index]
