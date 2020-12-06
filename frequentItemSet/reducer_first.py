@@ -29,7 +29,8 @@ for line in sys.stdin:
         print("%s "%words[1],end = '')
     
     if item != current_item:
-        print("",end="\n")
+        if current_count >= threshold - 1:
+            print("",end="\n")
         current_count = 1
         current_item = item
 

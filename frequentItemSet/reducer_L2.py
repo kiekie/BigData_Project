@@ -15,8 +15,14 @@ for line in sys.stdin:
         itemList.append(words[0])
     except:
         continue
-
+f = open("record.txt","w+")
+f.close()
+onepercent = len(itemList)/100
 while i < len(itemList):
+    if i%onepercent == 0:
+        f = open("record.txt","a")
+        print("%d"%(i/onepercent),file=f)
+        f.close()
     while j < len(itemList):
         a = set(buscketList[i])
         a.remove('')

@@ -126,16 +126,18 @@ def product_kk(dictk,k):
                 break      
     return kitem_dict
 
-                   
+print("pruning")              
 prune_dict=prune(item_list)  
 
 original_list=[]
+print("product 2")    
 twoItems=product_two(prune_dict)   
 
 
 flag=True
 k=3
 tmp_result={}
+print("product 3")   
 resultk=product_kk(twoItems,3)
 while flag:
 #    if the length of result is 0,we take the k-1 items set as result
@@ -146,9 +148,8 @@ while flag:
     else:
         tmp_result=resultk
         k+=1
-        if k>10:
-            print('Numbers of frequent item with size %s===%s' %((k-1),len(tmp_result)))
-            print("Frequent set of size  %s  == %s"%(k-1,tmp_result.keys()))
+        print('Numbers of frequent item with size %s===%s' %((k-1),len(tmp_result)))
+        print("Frequent set of size  %s  == %s"%(k-1,tmp_result.keys()))
         resultk=product_kk(tmp_result,k)
 
         
