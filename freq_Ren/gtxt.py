@@ -110,12 +110,13 @@ def data_industryid(csv_path1,csv_path3,txtpath):
     with open(csv_path1,'r',encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            if int(row['industry']) not in product_categroy:
-                product_categroy[int(row['industry'])]=set()
-                if row['\ufeffcreative_id'] not in product_categroy[int(row['industry'])]:  
+            if  row['industry']!='\\N':
+                if int(row['industry']) not in product_categroy:
+                    product_categroy[int(row['industry'])]=set()
+                    if row['\ufeffcreative_id'] not in product_categroy[int(row['industry'])]:  
+                        product_categroy[int(row['industry'])].add(row['\ufeffcreative_id'])
+                else:
                     product_categroy[int(row['industry'])].add(row['\ufeffcreative_id'])
-            else:
-                product_categroy[int(row['industry'])].add(row['\ufeffcreative_id'])
     csvfile.close()  
 
 
