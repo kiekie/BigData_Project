@@ -13,6 +13,7 @@ import numpy.linalg as la
 import collections
 
 from sklearn.cluster import KMeans
+from sklearn.cluster import MiniBatchKMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score, adjusted_rand_score
 from sklearn.pipeline import Pipeline
@@ -22,8 +23,14 @@ import joblib
 
 ADTEST_PATH = 'G:/BDT5741/BDTproject/adtest.csv'
 FRETEST_PATH = 'G:/BDT5741/BDTproject/fretest.csv'
-KMEANS_MODEL_PATH= './BigData_Project/test/doc_cluster.pkl'
-USER_INDUSTRY_PATH = "./BigData_Project/test/industry_industry.txt"
+
+KMEANS_MODEL_PATH_500= './BigData_Project/model/doc_cluster_500.pkl'
+KMEANS_MODEL_PATH_1000= './BigData_Project/model/doc_cluster_1000.pkl'
+KMEANS_MODEL_PATH_1500= './BigData_Project/model/doc_cluster_1500.pkl'
+KMEANS_MODEL_PATH_2000= './BigData_Project/model/doc_cluster_2000.pkl'
+KMEANS_MODEL_PATH_2500= './BigData_Project/model/doc_cluster_2500.pkl'
+
+USER_INDUSTRY_PATH = "./BigData_Project/test/user_industry.txt"
 
 ####################### 准备数据 begin ###########################################
 #key为类目id，value为素材id
@@ -70,7 +77,11 @@ def produca_data():
 # reuse user_click and compute matrix
 ####################### k_means begin ###########################################
 CATEGORY = 32
-N_CLUSTERS = 10
+#N_CLUSTERS = 500
+#N_CLUSTERS = 1000
+#N_CLUSTERS = 1500
+#N_CLUSTERS = 2000
+N_CLUSTERS = 2500
 
 """
 matrix = [[0 for _ in range(CATEGORY)] for _ in range(len(user_click.keys()))]
@@ -92,7 +103,8 @@ def user_industry():
                 user[i_d] = int(row[industry])
             user_industry_click.append(user)
     csvfile.close()
-    print("user_industry_click", len(user_industry_click))
+
+    print("user_industry_click", len(user_industry_click))  #900000 users
     return user_industry_click
 
 ## call this only at the begining, once k-means are done. All labels are preserved in KMEANS_MODEL_PATH
@@ -100,47 +112,65 @@ def k_means():
     """
     We only need to do k_means once and checkpoint lables
     Do k_means occasionally in need.
-    TODO: replace Kmeans with minibatch-kmeans?
     """
     data = user_industry()
-
+    data = np.array(data)
+    """
     clusterer = Pipeline (
         [
-            ("scaler", MinMaxScaler()),
+            #  ("scaler", MinMaxScaler()),  
             (
                 "kmeans",
                 KMeans(
                     n_clusters=N_CLUSTERS,
                     init="k-means++",
-                    n_init=40,
-                    max_iter=500,
+                    n_init=10,
+                    max_iter=300,
                     random_state=42,
                 ),
             ),
         ]
     )
-    clusterer.fit(data)
-
-    ## get users in the same cluster
-    clf = clusterer[1]
+    
+    clf = KMeans(
+                    n_clusters=N_CLUSTERS,
+                    init="k-means++",
+                    n_init=10,
+                    max_iter=300,
+                    random_state=42,
+                )
+    """
+    print("k_means begin")
+    clf = MiniBatchKMeans(init='k-means++', n_clusters=N_CLUSTERS, batch_size=100)
+    clf.fit(data)
+    ## get cluster labels
     clusters = clf.labels_.tolist()
-    print(clusters)   ## TODO: remove me 
+    print("len(clusters)", len(clusters))   ## TODO: remove me 
 
     ## store cluster models
-    joblib.dump(clf,  KMEANS_MODEL_PATH)
+    joblib.dump(clf,  KMEANS_MODEL_PATH_2500)
 
 
 ## When only need to call find_neighbors when doing query
 def find_neighbors(user_id):
     """
-    First we load model we trained before in K-means
+    First we load model trained before in K-means
     Get the neighbors in the same cluster.
-    And do cluster again
+    And do recommendation based on its neighbors
     """
-    km = joblib.load(KMEANS_MODEL_PATH)
+    km = joblib.load(KMEANS_MODEL_PATH_2000)
     clusters = km.labels_.tolist()
     label = clusters[user_id]
+    print("label", label)
     neighbors = [i for i, l in enumerate(clusters) if l == label]
+    print("neighbors", len(neighbors))
+    counter = collections.Counter(clusters)
+    # print("counter", max(counter.values()), min(counter.values()))
+    # 500  cluster:  最大的cluster的user数量:  29939 最小的cluster的user数量: 3
+    # 1000 cluster:  最大的cluster的user数量:  26075 最小的cluster的user数量: 1
+    # 1500 cluster:  最大的cluster的user数量:  24581 最小的cluster的user数量: 1
+    # 2000 cluster:  最大的cluster的user数量:  14034 最小的cluster的user数量: 1
+    # 2500 cluster:  最大的cluster的user数量:  15809 最小的cluster的user数量: 1
     return neighbors
 
 def recommend(user_id):
@@ -220,23 +250,20 @@ def pca_test():
     print(recon_mat)
 
 ####################### pca end #############################################
+def train_model():
+    k_means()
 
 
 def main():
     # train k_means
-    if sys.argv[1] == "train":
-        k_means()
-    
+    #if sys.argv[1] == "train":
+    #   # we don't use it now
     # query k_means
-    """
     if sys.argv[1] == "query":
         if not sys.argv[2].isdigit():
             print("User id should be a digit")
-            exit
+            exit()
         recommend(int(sys.argv[2]))
-    """
-
-    ## TODO: PCA part
 
 if __name__ == "__main__":
     main()
