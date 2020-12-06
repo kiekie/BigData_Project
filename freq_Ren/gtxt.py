@@ -181,7 +181,7 @@ def data_industryid_count(csv_path1,csv_path3,txtpath):
     max_industry_id = max(product_categroy.keys())  #335
        
     user_click={}
-    #count = 0
+    count = 0
     #行user，列industry_id，交点为这个用户点击这个industry的次数
     with open(csv_path2,'r') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -201,8 +201,10 @@ def data_industryid_count(csv_path1,csv_path3,txtpath):
                             user_click[int(row['user_id'])][categroy]=int(row['click_times'])
                         else:
                             user_click[int(row['user_id'])][categroy]+=int(row['click_times'])
-            #count += 1
-            #if count > 10000: break
+            count += 1
+            if count > 1000000:
+                count = 0
+                print(1000000)
     csvfile.close()
     
 #    print(user_click)
